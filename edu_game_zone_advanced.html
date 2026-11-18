@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Edu Game Zone</title>
+<style>
+:root{--bg:#080d1c;--panel:#111a2e;--panel2:#17243c;--cyan:#35e0ff;--violet:#9b5cff;--gold:#ffd166;--text:#edf5ff;--muted:#9fb0ca}
+*{box-sizing:border-box}body{margin:0;color:var(--text);font-family:Inter,Segoe UI,Arial,sans-serif;background:radial-gradient(ellipse at 15% 10%,#17295b 0,transparent 38%),radial-gradient(ellipse at 90% 25%,#32144e 0,transparent 35%),var(--bg);min-height:100vh}
+header{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:18px 5%;border-bottom:1px solid #293651;background:#080d1cbb;position:sticky;top:0;backdrop-filter:blur(12px);z-index:3}
+.brand{font-weight:900;font-size:1.25rem;letter-spacing:1px}.brand span{color:var(--cyan)}.profile{display:flex;align-items:center;gap:10px;color:var(--muted)}.avatar{background:linear-gradient(135deg,var(--violet),var(--cyan));border-radius:50%;width:38px;height:38px;display:grid;place-items:center;font-size:20px}
+.wrap{max-width:1150px;margin:auto;padding:28px 20px}.hero{border:1px solid #36496c;border-radius:24px;padding:28px;background:linear-gradient(120deg,#16284cdd,#341b55cc);display:flex;justify-content:space-between;align-items:center;gap:20px;overflow:hidden}
+.hero h1{font-size:clamp(1.8rem,4vw,3rem);margin:0 0 10px}.hero h1 span{color:var(--cyan)}.hero p{color:var(--muted);max-width:570px;line-height:1.6}.hero-art{font-size:clamp(70px,12vw,130px);filter:drop-shadow(0 0 22px #35e0ff66)}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:22px 0}.stat,.card,.gamebox{background:linear-gradient(145deg,var(--panel),#0d1528);border:1px solid #263752;border-radius:17px;padding:17px}.stat small{color:var(--muted)}.stat strong{display:block;font-size:1.45rem;margin-top:7px;color:var(--gold)}
+h2{margin:24px 0 15px}.games{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}.card{transition:.2s;position:relative;overflow:hidden}.card:hover{transform:translateY(-4px);border-color:var(--cyan);box-shadow:0 12px 35px #35e0ff18}.card .emoji{font-size:42px}.card h3{margin:10px 0 6px}.card p{color:var(--muted);min-height:44px;font-size:.93rem;line-height:1.4}.tag{font-size:.75rem;color:var(--cyan);margin-bottom:8px}
+button{cursor:pointer;border:0;border-radius:11px;padding:11px 15px;font-weight:800;color:#06111d;background:linear-gradient(90deg,var(--cyan),#8bf5ff);transition:.15s}button:hover{filter:brightness(1.1);transform:translateY(-1px)}button.secondary{background:#273650;color:var(--text);border:1px solid #405575}button.gold{background:linear-gradient(90deg,#ffb703,var(--gold))}button:disabled{opacity:.5;cursor:not-allowed}
+.gamebox{display:none;margin-top:24px;padding:25px}.gamebox.active{display:block}.game-top{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}.question{font-size:1.35rem;margin:25px 0}.choices{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}.choices button{background:#243550;color:var(--text);border:1px solid #3d5273}.choices button:hover{border-color:var(--cyan)}.feedback{min-height:28px;margin:15px 0;color:var(--gold);font-weight:700}.leader{display:grid;grid-template-columns:1fr 1fr;gap:16px}.leader .card{display:flex;justify-content:space-between;align-items:center}.muted{color:var(--muted)}.progress{height:8px;background:#25344c;border-radius:9px;overflow:hidden;margin-top:10px}.progress div{height:100%;width:0;background:linear-gradient(90deg,var(--violet),var(--cyan));transition:width .3s}
+footer{text-align:center;padding:25px;color:var(--muted)}.modal{position:fixed;inset:0;background:#020617dd;display:none;place-items:center;z-index:10;padding:18px}.modal.show{display:grid}.modal-inner{max-width:400px;width:100%;background:var(--panel);border:1px solid #435574;padding:24px;border-radius:20px}.modal-inner input{width:100%;padding:12px;margin:12px 0;border-radius:10px;border:1px solid #425573;background:#0b1324;color:white}
+@media(max-width:850px){.games{grid-template-columns:repeat(2,1fr)}.stats{grid-template-columns:repeat(2,1fr)}.hero-art{display:none}}
+@media(max-width:520px){header{padding:15px}.wrap{padding:20px 14px}.games{grid-template-columns:1fr}.choices{grid-template-columns:1fr}.leader{grid-template-columns:1fr}.hero{padding:22px}}
+</style>
+</head>
+<body>
+<header><div class="brand">🎮 EDU <span>GAME ZONE</span></div><div class="profile"><div class="avatar">🧑‍🎓</div><span id="playerName">Player</span><button class="secondary" onclick="editName()">Edit</button></div></header>
+<main class="wrap">
+<section class="hero"><div><h1>Learn. Play. <span>Level Up!</span></h1><p>Welcome to your learning arcade. Play mini-games, earn XP and coins, and build your knowledge one challenge at a time.</p><button onclick="startQuiz('gk')">⚡ Start Challenge</button></div><div class="hero-art">🕹️</div></section>
+<section class="stats"><div class="stat"><small>⭐ Total XP</small><strong id="xp">0</strong></div><div class="stat"><small>🪙 Coins</small><strong id="coins">0</strong></div><div class="stat"><small>🏆 Level</small><strong id="level">1</strong></div><div class="stat"><small>🔥 Best Score</small><strong id="best">0</strong></div></section>
+<div class="stat"><small>Level Progress</small><div class="progress"><div id="progress"></div></div><small id="progressText">0 / 100 XP</small></div>
+<h2>🧩 Choose Your Game</h2><section class="games">
+<div class="card"><div class="emoji">🧠</div><div class="tag">QUIZ ARCADE</div><h3>General Knowledge</h3><p>Quick questions from everyday knowledge.</p><button onclick="startQuiz('gk')">Play</button></div>
+<div class="card"><div class="emoji">🔬</div><div class="tag">SCIENCE</div><h3>Science Quiz</h3><p>Test your science facts and concepts.</p><button onclick="startQuiz('science')">Play</button></div>
+<div class="card"><div class="emoji">➗</div><div class="tag">MATH ARCADE</div><h3>Math Sprint</h3><p>Solve arithmetic challenges before time runs out.</p><button onclick="startMath()">Play</button></div>
+<div class="card"><div class="emoji">🃏</div><div class="tag">MEMORY</div><h3>Memory Match</h3><p>Find matching pairs of symbols.</p><button onclick="startMemory()">Play</button></div>
+</section>
+<section class="gamebox" id="gamebox"><div class="game-top"><h2 id="gameTitle">Game</h2><span>⏱ <b id="timer">30</b>s</span><button class="secondary" onclick="exitGame()">Exit</button></div><div class="question" id="question"></div><div class="choices" id="choices"></div><div class="feedback" id="feedback"></div><button class="gold" id="nextBtn" style="display:none" onclick="nextQuestion()">Next ➜</button></section>
+<h2>🏅 Leaderboard</h2><section class="leader"><div class="card"><span>🥇 Scholar Bot</span><b>520 XP</b></div><div class="card"><span>🥈 Quiz Master</span><b>390 XP</b></div><div class="card"><span>🥉 Brain Champ</span><b>250 XP</b></div><div class="card"><span>🎮 <span id="boardName">Player</span> (You)</span><b id="boardXP">0 XP</b></div></section>
+</main><footer>Edu Game Zone · Practice smart and have fun!</footer>
+<div class="modal" id="nameModal"><div class="modal-inner"><h2>👋 Player Profile</h2><p class="muted">Choose a display name.</p><input id="nameInput" maxlength="18" placeholder="Enter player name"><button onclick="saveName()">Save Name</button></div></div>
+<script>
+const bank={
+gk:[
+["What is the capital of India?",["Mumbai","New Delhi","Patna","Kolkata"],1],
+["Which planet is known as the Red Planet?",["Venus","Jupiter","Mars","Mercury"],2],
+["How many days are in a leap year?",["365","366","364","360"],1],
+["Which is the largest ocean?",["Atlantic","Indian","Arctic","Pacific"],3],
+["What is the national flower of India?",["Rose","Lotus","Lily","Tulip"],1],
+["How many sides does a hexagon have?",["5","6","7","8"],1],
+["Which direction does the Sun rise from?",["West","North","East","South"],2],
+["Which animal is India's national animal?",["Lion","Tiger","Elephant","Leopard"],1],
+["What is the currency of Japan?",["Won","Dollar","Yen","Rupee"],2],
+["Which is the largest continent?",["Africa","Europe","Asia","Australia"],2]],
+science:[
+["What is the chemical formula of water?",["CO2","H2O","O2","NaCl"],1],
+["Plants make food mainly through?",["Respiration","Digestion","Photosynthesis","Fermentation"],2],
+["Which gas do humans need to breathe?",["Nitrogen","Oxygen","Hydrogen","Helium"],1],
+["What is Earth's natural satellite?",["Sun","Mars","Moon","Venus"],2],
+["Which organ pumps blood?",["Lungs","Brain","Heart","Kidney"],2],
+["What is the SI unit of force?",["Joule","Newton","Watt","Pascal"],1],
+["How many bones are in an adult human body approximately?",["206","150","300","180"],0],
+["Which state of matter has a fixed shape?",["Liquid","Gas","Plasma","Solid"],3],
+["Which vitamin is often produced with sunlight exposure?",["Vitamin A","Vitamin C","Vitamin D","Vitamin K"],2],
+["Which part of a plant absorbs water?",["Leaves","Flower","Roots","Stem"],2]]
+};
+let xp=0,coins=0,best=0,player="Player",mode="",items=[],pos=0,score=0,remaining=30,timerHandle=null,mathAnswerVal=0,memoryCards=[],flipped=[],matched=0;
+function load(){try{let d=JSON.parse(localStorage.getItem("eduGameZone")||"{}");xp=d.xp||0;coins=d.coins||0;best=d.best||0;player=d.player||"Player"}catch(e){};refresh();if(player==="Player")document.getElementById("nameModal").classList.add("show")}
+function save(){localStorage.setItem("eduGameZone",JSON.stringify({xp,coins,best,player}))}
+function refresh(){document.getElementById("playerName").textContent=player;document.getElementById("boardName").textContent=player;document.getElementById("xp").textContent=xp;document.getElementById("coins").textContent=coins;let lv=Math.floor(xp/100)+1;document.getElementById("level").textContent=lv;document.getElementById("best").textContent=best;document.getElementById("boardXP").textContent=xp+" XP";document.getElementById("progress").style.width=(xp%100)+"%";document.getElementById("progressText").textContent=(xp%100)+" / 100 XP"}
+function editName(){document.getElementById("nameInput").value=player;document.getElementById("nameModal").classList.add("show")}
+function saveName(){let v=document.getElementById("nameInput").value.trim();if(v)player=v;document.getElementById("nameModal").classList.remove("show");refresh();save()}
+function begin(title){clearInterval(timerHandle);mode=title;pos=0;score=0;remaining=30;document.getElementById("gamebox").classList.add("active");document.getElementById("gameTitle").textContent=title;document.getElementById("feedback").textContent="";document.getElementById("nextBtn").style.display="none";timerHandle=setInterval(()=>{remaining--;document.getElementById("timer").textContent=remaining;if(remaining<=0)finish()},1000)}
+function startQuiz(type){items=[...bank[type]].sort(()=>Math.random()-.5);begin(type==="science"?"Science Quiz":"GK Quiz");showQuiz()}
+function showQuiz(){if(pos>=items.length){finish();return}let q=items[pos];document.getElementById("question").textContent=(pos+1)+". "+q[0];document.getElementById("choices").innerHTML=q[1].map((v,i)=>`<button onclick="quizAnswer(${i})">${v}</button>`).join("");document.getElementById("feedback").textContent="";document.getElementById("nextBtn").style.display="none"}
+function quizAnswer(i){if(document.querySelector("#choices button:disabled"))return;let q=items[pos];document.querySelectorAll("#choices button").forEach(b=>b.disabled=true);if(i===q[2]){score+=10;document.getElementById("feedback").textContent="Correct! +10 points"}else document.getElementById("feedback").textContent="Not quite. Correct answer: "+q[1][q[2]];document.getElementById("nextBtn").style.display="inline-block"}
+function nextQuestion(){pos++;if(mode==="Math Sprint")showMath();else if(mode==="Memory Match")showMemory();else showQuiz()}
+function startMath(){begin("Math Sprint");showMath()}
+function showMath(){let a=Math.floor(Math.random()*30)+1,b=Math.floor(Math.random()*20)+1;let op=Math.random()<.5?"+":"×";mathAnswerVal=op==="+"?a+b:a*b;document.getElementById("question").textContent=`${a} ${op} ${b} = ?`;let opts=[mathAnswerVal,mathAnswerVal+3,mathAnswerVal-2,mathAnswerVal+7].sort(()=>Math.random()-.5);document.getElementById("choices").innerHTML=opts.map(x=>`<button onclick="mathPick(${x})">${x}</button>`).join("");document.getElementById("feedback").textContent="";document.getElementById("nextBtn").style.display="none"}
+function mathPick(x){if(document.querySelector("#choices button:disabled"))return;document.querySelectorAll("#choices button").forEach(b=>b.disabled=true);if(x===mathAnswerVal){score+=10;document.getElementById("feedback").textContent="Correct! +10 points"}else document.getElementById("feedback").textContent="Incorrect! Answer: "+mathAnswerVal;document.getElementById("nextBtn").style.display="inline-block"}
+function startMemory(){begin("Memory Match");memoryCards=["🍎","🍎","🚀","🚀","🌟","🌟","🐱","🐱"].sort(()=>Math.random()-.5);flipped=[];matched=0;showMemory()}
+function showMemory(){document.getElementById("question").textContent="Flip cards and find matching pairs.";document.getElementById("choices").innerHTML=memoryCards.map((v,i)=>`<button id="m${i}" onclick="flipCard(${i})" style="font-size:26px;min-height:65px">${flipped.includes(i)||memoryCards[i]==="MATCHED"?v:"❔"}</button>`).join("");document.getElementById("feedback").textContent=matched===4?"All pairs matched!":"";document.getElementById("nextBtn").style.display="none"}
+function flipCard(i){if(flipped.includes(i)||memoryCards[i]==="MATCHED"||flipped.length>=2)return;flipped.push(i);document.getElementById("m"+i).textContent=memoryCards[i];if(flipped.length===2){let [a,b]=flipped;if(memoryCards[a]===memoryCards[b]){memoryCards[a]=memoryCards[b]="MATCHED";matched++;score+=20;document.getElementById("feedback").textContent="Pair matched! +20 points";flipped=[];if(matched===4){document.getElementById("nextBtn").style.display="inline-block";document.getElementById("nextBtn").textContent="Finish";document.getElementById("nextBtn").onclick=finish}else setTimeout(showMemory,450)}else{document.getElementById("feedback").textContent="Try another pair";setTimeout(()=>{flipped=[];showMemory()},700)}}}
+function finish(){clearInterval(timerHandle);let reward=Math.max(score,0);xp+=reward;coins+=Math.floor(reward/10);best=Math.max(best,score);document.getElementById("gameTitle").textContent="🏁 Challenge Complete";document.getElementById("question").textContent="You earned "+reward+" XP and "+Math.floor(reward/10)+" coins!";document.getElementById("choices").innerHTML="";document.getElementById("feedback").textContent="Final score: "+score+" points. Keep learning!";document.getElementById("nextBtn").textContent="Play Again";document.getElementById("nextBtn").style.display="inline-block";document.getElementById("nextBtn").onclick=()=>{if(mode==="Math Sprint")startMath();else if(mode==="Memory Match")startMemory();else startQuiz(mode==="Science Quiz"?"science":"gk")};refresh();save()}
+function exitGame(){clearInterval(timerHandle);document.getElementById("gamebox").classList.remove("active")}
+load();
+</script>
+</body></html>
